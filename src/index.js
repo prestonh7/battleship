@@ -1,4 +1,5 @@
-const shipFactory = (length) => {
+const shipFactory = (size) => {
+  const length = size;
   let hitpoints = length;
 
   const isSunk = () => {
@@ -13,5 +14,16 @@ const shipFactory = (length) => {
     hitpoints -= 1;
   };
 
-  return { hit };
+  return { length, hit };
+};
+
+const gameboardFactory = () => {
+  const placeShip = () => {
+
+  };
+  const receiveAttack = (x, y) => {
+
+  };
+
+  return { placeShip, receiveAttack };
 };
