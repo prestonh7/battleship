@@ -18,6 +18,15 @@ const shipFactory = (size) => {
 };
 
 const gameboardFactory = () => {
+  const boardSize = 10;
+  const board = [];
+
+  const createBoard = () => {
+    for (let i = 0; i < boardSize; i += 1) {
+      board[i] = Array(boardSize).fill(null);
+    }
+  };
+
   const placeShip = () => {
 
   };
@@ -25,5 +34,8 @@ const gameboardFactory = () => {
 
   };
 
-  return { placeShip, receiveAttack };
+  return { createBoard, placeShip, receiveAttack };
 };
+
+const playerOneBoard = gameboardFactory();
+playerOneBoard.createBoard();
