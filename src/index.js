@@ -27,11 +27,23 @@ const gameboardFactory = () => {
     }
   };
 
-  const placeShip = () => {
-
+  const placeShip = (ship, x, y, isHorizontal) => {
+    if (isHorizontal) {
+      for (let i = 0; i < ship.length; i += 1) {
+        this.board[x][y + i] = ship;
+      }
+    } else {
+      for (let i = 0; i < ship.length; i += 1) {
+        this.board[x + i][y] = ship;
+      }
+    }
   };
   const receiveAttack = (x, y) => {
-
+    if (this.board[x][y] !== null) {
+      this.board[x][y].hit();
+    } else {
+      this.board[x][y] = 'miss';
+    }
   };
 
   return { createBoard, placeShip, receiveAttack };
