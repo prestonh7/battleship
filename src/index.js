@@ -30,32 +30,54 @@ const gameboardFactory = () => {
   const placeShip = (ship, x, y, isHorizontal) => {
     if (isHorizontal) {
       for (let i = 0; i < ship.length; i += 1) {
-        this.board[x][y + i] = ship;
+        board[x][y + i] = ship;
       }
     } else {
       for (let i = 0; i < ship.length; i += 1) {
-        this.board[x + i][y] = ship;
+        board[x + i][y] = ship;
       }
     }
   };
   const receiveAttack = (x, y) => {
-    if (this.board[x][y] !== null) {
-      this.board[x][y].hit();
+    if (board[x][y] !== null) {
+      board[x][y].hit();
     } else {
-      this.board[x][y] = 'miss';
+      board[x][y] = 'miss';
     }
   };
 
-  return { createBoard, placeShip, receiveAttack };
+  return {
+    board, createBoard, placeShip, receiveAttack,
+  };
 };
 
-const playerFactory = () => {
+const playerFactory = (userGameboard) => {
+  const gameboard = userGameboard;
   const attack = (opponent, x, y) => {
     opponent.receiveAttack(x, y);
   };
-
-  return { attack };
+  const logBoard = () => {
+    console.table(gameboard);
+  };
+  return { logBoard, gameboard, attack };
 };
 
-const playerOneBoard = gameboardFactory();
-playerOneBoard.createBoard();
+const gameState = () => {
+  const initializeGame = () => {
+    const playerBoard = gameboardFactory();
+    const computerBoard = gameboardFactory();
+    playerBoard.createBoard();
+    computerBoard.createBoard();
+
+    const user = playerFactory(playerBoard);
+    const computer = playerFactory(computerBoard); // Change this to ai
+    const userCarrier = shipFactory(5);
+    user.gameboard.placeShip(userCarrier, 1, 3, true);
+    user.logBoard();
+  };
+
+  return { initializeGame };
+};
+
+const game = gameState();
+game.initializeGame();
