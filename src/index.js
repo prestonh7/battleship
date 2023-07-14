@@ -10,11 +10,10 @@ const shipFactory = (size) => {
   };
 
   const hit = () => {
-    if (isSunk) return;
     hitpoints -= 1;
   };
 
-  return { length, hit };
+  return { length, hit, isSunk };
 };
 
 const gameboardFactory = () => {
@@ -27,6 +26,7 @@ const gameboardFactory = () => {
     }
   };
 
+  // Need to check if placement is valid
   const placeShip = (ship, x, y, isHorizontal) => {
     if (isHorizontal) {
       for (let i = 0; i < ship.length; i += 1) {
@@ -47,6 +47,14 @@ const gameboardFactory = () => {
   };
 
   return { createBoard, placeShip, receiveAttack };
+};
+
+const playerFactory = () => {
+  const attack = (opponent, x, y) => {
+    opponent.receiveAttack(x, y);
+  };
+
+  return { attack };
 };
 
 const playerOneBoard = gameboardFactory();
