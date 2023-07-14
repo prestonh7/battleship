@@ -19,6 +19,7 @@ const shipFactory = (size) => {
 const gameboardFactory = () => {
   const boardSize = 10;
   const board = [];
+  const shipArray = [];
 
   const createBoard = () => {
     for (let i = 0; i < boardSize; i += 1) {
@@ -37,7 +38,9 @@ const gameboardFactory = () => {
         board[x + i][y] = ship;
       }
     }
+    shipArray.push(ship);
   };
+
   const receiveAttack = (x, y) => {
     if (board[x][y] !== null) {
       board[x][y].hit();
@@ -46,8 +49,17 @@ const gameboardFactory = () => {
     }
   };
 
+  const allShipsSunk = () => {
+    for (let i = 0; i < shipArray.length; i += 1) {
+      if (!shipArray[i].isSunk()) {
+        return false;
+      }
+    }
+    return true;
+  };
+
   return {
-    board, createBoard, placeShip, receiveAttack,
+    board, createBoard, placeShip, receiveAttack, allShipsSunk,
   };
 };
 
@@ -59,6 +71,7 @@ const playerFactory = (userGameboard) => {
   const logBoard = () => {
     console.table(gameboard);
   };
+
   return { logBoard, gameboard, attack };
 };
 
