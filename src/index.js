@@ -90,9 +90,8 @@ const gameboardFactory = () => {
     });
   };
 
-  // Need to track past hits here too, can hit same cords
   const receiveAttack = (x, y) => {
-    if (board[x][y] !== null) {
+    if (board[x][y] !== null && board[x][y] !== 'miss') {
       board[x][y].hit();
     } else {
       board[x][y] = 'miss';
@@ -121,7 +120,7 @@ const playerFactory = (userGameboard) => {
   };
 
   const logBoard = () => { // Delete this later
-    console.table(gameboard);
+    console.table(gameboard.board);
   };
 
   return {
@@ -129,15 +128,45 @@ const playerFactory = (userGameboard) => {
   };
 };
 
+const computerFactory = (computerBoard) => {
+  const gameboard = computerBoard;
+
+  const checkIfValid = (opponent, x, y) => {
+    const attack = opponent.gameboard.board[x][y];
+    const isValid = attack === null || attack === 'miss' || typeof attack === 'object';
+
+    return isValid;
+  };
+
+  const randomAttack = (opponent) => {
+    let isValidAttack = false;
+    let x;
+    let y;
+
+    while (!isValidAttack) {
+      x = Math.floor(Math.random() * opponent.gameboard.boardSize);
+      y = Math.floor(Math.random() * opponent.gameboard.boardSize);
+
+      isValidAttack = checkIfValid(opponent, x, y);
+    }
+
+    opponent.gameboard.receiveAttack(x, y);
+  };
+
+  return { gameboard, randomAttack };
+};
+
 const gameState = () => {
   const initializeGame = () => {
     const playerBoard = gameboardFactory();
     const computerBoard = gameboardFactory();
-    playerBoard.createBoard();
-    computerBoard.createBoard();
 
     const user = playerFactory(playerBoard);
-    const computer = playerFactory(computerBoard); // Change this to ai
+    const computer = computerFactory(computerBoard);
+
+    user.gameboard.createBoard();
+    computer.gameboard.createBoard();
+
     playerBoard.placeAllShips();
     user.logBoard();
   };
