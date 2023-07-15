@@ -27,7 +27,6 @@ const gameboardFactory = () => {
     }
   };
 
-  // Need to check if placement is valid
   const placeShip = (ship, x, y, isHorizontal) => {
     if (isHorizontal) {
       for (let i = 0; i < ship.length; i += 1) {
@@ -39,6 +38,32 @@ const gameboardFactory = () => {
       }
     }
     shipArray.push(ship);
+  };
+
+  const canPlaceShip = (length, x, y, isHorizontal) => {
+    if (isHorizontal) {
+      if (y + length > boardSize) {
+        return false;
+      }
+
+      for (let i = y; i < y + length; i += 1) {
+        if (board[x][i] !== null) {
+          return false;
+        }
+      }
+    } else {
+      if (x + length > boardSize) {
+        return false;
+      }
+
+      for (let i = x; i < x + length; i += 1) {
+        if (board[i][y] !== null) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   };
 
   const receiveAttack = (x, y) => {
@@ -59,20 +84,48 @@ const gameboardFactory = () => {
   };
 
   return {
-    board, createBoard, placeShip, receiveAttack, allShipsSunk,
+    board, createBoard, placeShip, canPlaceShip, receiveAttack, allShipsSunk,
   };
 };
 
 const playerFactory = (userGameboard) => {
   const gameboard = userGameboard;
+
   const attack = (opponent, x, y) => {
     opponent.receiveAttack(x, y);
   };
-  const logBoard = () => {
+
+  const placeAllShips = () => {
+    const shipLengths = [5, 4, 3, 3, 2];
+
+    // Remove confirm and prompts later
+    shipLengths.forEach((length) => {
+      const isHorizontal = window.confirm('Do you want to place this ship horizontally?');
+      let isValidPlacement = false;
+
+      while (!isValidPlacement) {
+        const row = prompt(`Enter the starting row (0-${gameboard.boardSize - 1}):`);
+        const column = prompt(`Enter the starting column (0-${gameboard.boardSize - 1}):`);
+
+        isValidPlacement = gameboard.canPlaceShip(length, row, column, isHorizontal);
+
+        if (isValidPlacement) {
+          const ship = shipFactory(length);
+          gameboard.placeShip(ship, row, column, isHorizontal);
+        } else {
+          alert('Invalid placement');
+        }
+      }
+    });
+  };
+
+  const logBoard = () => { // Delete this later
     console.table(gameboard);
   };
 
-  return { logBoard, gameboard, attack };
+  return {
+    logBoard, gameboard, attack, placeAllShips,
+  };
 };
 
 const gameState = () => {
