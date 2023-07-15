@@ -66,6 +66,31 @@ const gameboardFactory = () => {
     return true;
   };
 
+  const placeAllShips = () => {
+    const shipLengths = [5, 4, 3, 3, 2];
+
+    // Remove confirm and prompts later
+    shipLengths.forEach((length) => {
+      const isHorizontal = window.confirm('Do you want to place this ship horizontally?');
+      let isValidPlacement = false;
+
+      while (!isValidPlacement) {
+        const row = parseInt(prompt(`Enter the starting row (0-${boardSize}):`), 10);
+        const column = parseInt(prompt(`Enter the starting column (0-${boardSize}):`), 10);
+
+        isValidPlacement = canPlaceShip(length, row, column, isHorizontal);
+
+        if (isValidPlacement) {
+          const ship = shipFactory(length);
+          placeShip(ship, row, column, isHorizontal);
+        } else {
+          alert('Invalid placement');
+        }
+      }
+    });
+  };
+
+  // Need to track past hits here too, can hit same cords
   const receiveAttack = (x, y) => {
     if (board[x][y] !== null) {
       board[x][y].hit();
@@ -84,7 +109,7 @@ const gameboardFactory = () => {
   };
 
   return {
-    board, createBoard, placeShip, canPlaceShip, receiveAttack, allShipsSunk,
+    board, createBoard, placeShip, canPlaceShip, receiveAttack, allShipsSunk, placeAllShips,
   };
 };
 
@@ -95,36 +120,12 @@ const playerFactory = (userGameboard) => {
     opponent.receiveAttack(x, y);
   };
 
-  const placeAllShips = () => {
-    const shipLengths = [5, 4, 3, 3, 2];
-
-    // Remove confirm and prompts later
-    shipLengths.forEach((length) => {
-      const isHorizontal = window.confirm('Do you want to place this ship horizontally?');
-      let isValidPlacement = false;
-
-      while (!isValidPlacement) {
-        const row = prompt(`Enter the starting row (0-${gameboard.boardSize - 1}):`);
-        const column = prompt(`Enter the starting column (0-${gameboard.boardSize - 1}):`);
-
-        isValidPlacement = gameboard.canPlaceShip(length, row, column, isHorizontal);
-
-        if (isValidPlacement) {
-          const ship = shipFactory(length);
-          gameboard.placeShip(ship, row, column, isHorizontal);
-        } else {
-          alert('Invalid placement');
-        }
-      }
-    });
-  };
-
   const logBoard = () => { // Delete this later
     console.table(gameboard);
   };
 
   return {
-    logBoard, gameboard, attack, placeAllShips,
+    logBoard, gameboard, attack,
   };
 };
 
@@ -137,8 +138,7 @@ const gameState = () => {
 
     const user = playerFactory(playerBoard);
     const computer = playerFactory(computerBoard); // Change this to ai
-    const userCarrier = shipFactory(5);
-    user.gameboard.placeShip(userCarrier, 1, 3, true);
+    playerBoard.placeAllShips();
     user.logBoard();
   };
 
