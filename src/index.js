@@ -66,30 +66,6 @@ const gameboardFactory = () => {
     return true;
   };
 
-  const placeAllShips = () => {
-    const shipLengths = [5, 4, 3, 3, 2];
-
-    // Remove confirm and prompts later
-    shipLengths.forEach((length) => {
-      const isHorizontal = window.confirm('Do you want to place this ship horizontally?');
-      let isValidPlacement = false;
-
-      while (!isValidPlacement) {
-        const row = parseInt(prompt(`Enter the starting row (0-${boardSize}):`), 10);
-        const column = parseInt(prompt(`Enter the starting column (0-${boardSize}):`), 10);
-
-        isValidPlacement = canPlaceShip(length, row, column, isHorizontal);
-
-        if (isValidPlacement) {
-          const ship = shipFactory(length);
-          placeShip(ship, row, column, isHorizontal);
-        } else {
-          alert('Invalid placement');
-        }
-      }
-    });
-  };
-
   const receiveAttack = (x, y) => {
     if (board[x][y] !== null && board[x][y] !== 'miss') {
       board[x][y].hit();
@@ -108,7 +84,7 @@ const gameboardFactory = () => {
   };
 
   return {
-    board, createBoard, placeShip, canPlaceShip, receiveAttack, allShipsSunk, placeAllShips,
+    board, createBoard, placeShip, canPlaceShip, receiveAttack, allShipsSunk,
   };
 };
 
@@ -119,12 +95,36 @@ const playerFactory = (userGameboard) => {
     opponent.receiveAttack(x, y);
   };
 
+  const placeAllShips = () => {
+    const shipLengths = [5, 4, 3, 3, 2];
+
+    // Remove confirm and prompts later
+    shipLengths.forEach((length) => {
+      const isHorizontal = window.confirm('Do you want to place this ship horizontally?');
+      let isValidPlacement = false;
+
+      while (!isValidPlacement) {
+        const row = parseInt(prompt(`Enter the starting row (0-${gameboard.boardSize}):`), 10);
+        const column = parseInt(prompt(`Enter the starting column (0-${gameboard.boardSize}):`), 10);
+
+        isValidPlacement = gameboard.canPlaceShip(length, row, column, isHorizontal);
+
+        if (isValidPlacement) {
+          const ship = shipFactory(length);
+          gameboard.placeShip(ship, row, column, isHorizontal);
+        } else {
+          alert('Invalid placement');
+        }
+      }
+    });
+  };
+
   const logBoard = () => { // Delete this later
     console.table(gameboard.board);
   };
 
   return {
-    logBoard, gameboard, attack,
+    logBoard, gameboard, attack, placeAllShips,
   };
 };
 
@@ -167,7 +167,7 @@ const gameState = () => {
     user.gameboard.createBoard();
     computer.gameboard.createBoard();
 
-    playerBoard.placeAllShips();
+    user.placeAllShips();
     user.logBoard();
   };
 
