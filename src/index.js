@@ -157,6 +157,8 @@ const computerFactory = (computerBoard) => {
 };
 
 const gameState = () => {
+  let turn = 1;
+
   const initializeGame = () => {
     const playerBoard = gameboardFactory();
     const computerBoard = gameboardFactory();
@@ -171,8 +173,35 @@ const gameState = () => {
     user.logBoard();
   };
 
-  return { initializeGame };
+  const checkTurn = () => turn;
+
+  const changeTurn = () => {
+    if (turn === 1) {
+      turn = 2;
+    } else {
+      turn = 1;
+    }
+  };
+
+  return { initializeGame, checkTurn, changeTurn };
 };
 
+const displayController = () => {
+  const initializeScreen = () => {
+    const content = document.querySelector('.content');
+    for (let i = 0; i < 10; i += 1) {
+      for (let j = 0; j < 10; j += 1) {
+        const button = document.createElement('button');
+        button.className = `gameTile ${i}, ${j}`;
+        content.appendChild(button);
+      }
+    }
+  };
+
+  return { initializeScreen };
+};
+
+const display = displayController();
+display.initializeScreen();
 const game = gameState();
 game.initializeGame();
