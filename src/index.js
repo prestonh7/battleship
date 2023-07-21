@@ -185,12 +185,18 @@ const gameState = () => {
     }
   };
 
-  return { initializeGame, checkTurn, changeTurn };
+  const handleButtonClick = () => {
+    console.log('click!');
+  };
+
+  return {
+    initializeGame, checkTurn, changeTurn, handleButtonClick,
+  };
 };
 
-const displayController = () => {
-  const initializeScreen = () => {
-    const content = document.querySelector('.content');
+const displayController = (game) => {
+  const generatePlayerScreen = () => {
+    const content = document.querySelector('.userBoard');
     for (let i = 0; i < 10; i += 1) {
       for (let j = 0; j < 10; j += 1) {
         const button = document.createElement('button');
@@ -200,11 +206,30 @@ const displayController = () => {
     }
   };
 
+  const generateComputerScreen = () => {
+    const content = document.querySelector('.computerBoard');
+    for (let i = 0; i < 10; i += 1) {
+      for (let j = 0; j < 10; j += 1) {
+        const button = document.createElement('button');
+        button.addEventListener('click', () => {
+          game.handleButtonClick(i, j);
+        });
+        button.className = `gameTile ${i}, ${j}`;
+        content.appendChild(button);
+      }
+    }
+  };
+
+  const initializeScreen = () => {
+    generatePlayerScreen();
+    generateComputerScreen();
+  };
+
   return { initializeScreen };
 };
 
 const game = gameState();
 game.initializeGame();
 
-const display = displayController();
+const display = displayController(game);
 display.initializeScreen();
