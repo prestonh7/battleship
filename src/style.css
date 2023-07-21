@@ -1,0 +1,10 @@
+.content {
+    display: grid;
+    grid-template: 1fr / 1fr 1fr;
+    justify-items: center;
+}
+
+.userBoard, .computerBoard {
+    display: grid;
+    grid-template: repeat(10, 2em) / repeat(10, 2em);
+}
