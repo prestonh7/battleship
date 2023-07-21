@@ -1,3 +1,5 @@
+import './style.css';
+
 const shipFactory = (size) => {
   const length = size;
   let hitpoints = length;
@@ -201,7 +203,8 @@ const displayController = () => {
   return { initializeScreen };
 };
 
-const display = displayController();
-display.initializeScreen();
 const game = gameState();
 game.initializeGame();
+
+const display = displayController();
+display.initializeScreen();
