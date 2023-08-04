@@ -97,28 +97,40 @@ const playerFactory = (userGameboard) => {
     opponent.receiveAttack(x, y);
   };
 
-  const placeAllShips = () => {
+  const placeAllShips = (x, y) => {
     const shipLengths = [5, 4, 3, 3, 2];
+    const currentShipIndex = 0;
+    const isHorizontal = true;
+    let isValidPlacement = false;
+
+    isValidPlacement = gameboard.canPlaceShip(shipLengths[currentShipIndex], x, y, isHorizontal);
+
+    if (!isValidPlacement) {
+      alert('Invalid placement');
+    } else {
+      const ship = shipFactory(shipLengths[currentShipIndex]);
+      gameboard.placeShip(ship, x, y, isHorizontal);
+    }
 
     // Remove confirm and prompts later
-    shipLengths.forEach((length) => {
-      const isHorizontal = window.confirm('Do you want to place this ship horizontally?');
-      let isValidPlacement = false;
+    // shipLengths.forEach((length) => {
+    //   const isHorizontal = window.confirm('Do you want to place this ship horizontally?');
+    //   let isValidPlacement = false;
 
-      while (!isValidPlacement) {
-        const row = parseInt(prompt(`Enter the starting row (0-${gameboard.boardSize}):`), 10);
-        const column = parseInt(prompt(`Enter the starting column (0-${gameboard.boardSize}):`), 10);
+    //   while (!isValidPlacement) {
+    //     const row = parseInt(prompt(`Enter the starting row (0-${gameboard.boardSize}):`), 10);
+    //     const column = parseInt(prompt(`Enter the starting column (0-${gameboard.boardSize}):`), 10);
 
-        isValidPlacement = gameboard.canPlaceShip(length, row, column, isHorizontal);
+    //     isValidPlacement = gameboard.canPlaceShip(length, row, column, isHorizontal);
 
-        if (isValidPlacement) {
-          const ship = shipFactory(length);
-          gameboard.placeShip(ship, row, column, isHorizontal);
-        } else {
-          alert('Invalid placement');
-        }
-      }
-    });
+    //     if (isValidPlacement) {
+    //       const ship = shipFactory(length);
+    //       gameboard.placeShip(ship, row, column, isHorizontal);
+    //     } else {
+    //       alert('Invalid placement');
+    //     }
+    //   }
+    // });
   };
 
   const logBoard = () => { // Delete this later
@@ -160,6 +172,7 @@ const computerFactory = (computerBoard) => {
 
 const gameState = () => {
   let turn = 1;
+  let shipPlacementPhase = true;
 
   const initializeGame = () => {
     const playerBoard = gameboardFactory();
@@ -175,6 +188,10 @@ const gameState = () => {
     user.logBoard();
   };
 
+  const changePlacementPhase = () => {
+    shipPlacementPhase = false;
+  };
+
   const checkTurn = () => turn;
 
   const changeTurn = () => {
@@ -186,11 +203,13 @@ const gameState = () => {
   };
 
   const handleButtonClick = () => {
-    console.log('click!');
+    if (shipPlacementPhase) {
+
+    }
   };
 
   return {
-    initializeGame, checkTurn, changeTurn, handleButtonClick,
+    initializeGame, checkTurn, changeTurn, handleButtonClick, changePlacementPhase,
   };
 };
 
@@ -200,6 +219,9 @@ const displayController = (game) => {
     for (let i = 0; i < 10; i += 1) {
       for (let j = 0; j < 10; j += 1) {
         const button = document.createElement('button');
+        button.addEventListener('click', () => {
+          game.handleButtonClick(i, j);
+        });
         button.className = `gameTile ${i}, ${j}`;
         content.appendChild(button);
       }
