@@ -1,7 +1,6 @@
 import './style.css';
 
-const shipFactory = (size) => {
-  const length = size;
+const shipFactory = (length) => {
   let hitpoints = length;
 
   const isSunk = () => {
@@ -90,60 +89,47 @@ const gameboardFactory = () => {
   };
 };
 
-const playerFactory = (userGameboard) => {
-  const gameboard = userGameboard;
+const playerFactory = () => {
+  const gameboard = gameboardFactory();
+  gameboard.createBoard();
+  let allShipsPlaced = false;
 
   const attack = (opponent, x, y) => {
     opponent.receiveAttack(x, y);
   };
 
+  const changePhase = () => {
+    allShipsPlaced = true;
+  };
+
+  const shipsPlaced = () => allShipsPlaced;
+
   const placeAllShips = (x, y) => {
     const shipLengths = [5, 4, 3, 3, 2];
-    const currentShipIndex = 0;
+    let shipIndex = 0;
     const isHorizontal = true;
     let isValidPlacement = false;
 
-    isValidPlacement = gameboard.canPlaceShip(shipLengths[currentShipIndex], x, y, isHorizontal);
+    isValidPlacement = gameboard.canPlaceShip(shipLengths[shipIndex], x, y, isHorizontal);
 
     if (!isValidPlacement) {
       alert('Invalid placement');
-    } else {
-      const ship = shipFactory(shipLengths[currentShipIndex]);
+    } else if (shipIndex <= 4) {
+      const ship = shipFactory(shipLengths[shipIndex]);
       gameboard.placeShip(ship, x, y, isHorizontal);
+      shipIndex += 1;
+    } else {
+      changePhase();
     }
-
-    // Remove confirm and prompts later
-    // shipLengths.forEach((length) => {
-    //   const isHorizontal = window.confirm('Do you want to place this ship horizontally?');
-    //   let isValidPlacement = false;
-
-    //   while (!isValidPlacement) {
-    //     const row = parseInt(prompt(`Enter the starting row (0-${gameboard.boardSize}):`), 10);
-    //     const column = parseInt(prompt(`Enter the starting column (0-${gameboard.boardSize}):`), 10);
-
-    //     isValidPlacement = gameboard.canPlaceShip(length, row, column, isHorizontal);
-
-    //     if (isValidPlacement) {
-    //       const ship = shipFactory(length);
-    //       gameboard.placeShip(ship, row, column, isHorizontal);
-    //     } else {
-    //       alert('Invalid placement');
-    //     }
-    //   }
-    // });
   };
-
-  const logBoard = () => { // Delete this later
-    console.table(gameboard.board);
-  };
-
   return {
-    logBoard, gameboard, attack, placeAllShips,
+    attack, placeAllShips, gameboard, shipsPlaced,
   };
 };
 
-const computerFactory = (computerBoard) => {
-  const gameboard = computerBoard;
+const computerFactory = () => {
+  const gameboard = gameboardFactory();
+  gameboard.createBoard();
 
   const checkIfValid = (opponent, x, y) => {
     const attack = opponent.gameboard.board[x][y];
@@ -172,25 +158,6 @@ const computerFactory = (computerBoard) => {
 
 const gameState = () => {
   let turn = 1;
-  let shipPlacementPhase = true;
-
-  const initializeGame = () => {
-    const playerBoard = gameboardFactory();
-    const computerBoard = gameboardFactory();
-
-    const user = playerFactory(playerBoard);
-    const computer = computerFactory(computerBoard);
-
-    user.gameboard.createBoard();
-    computer.gameboard.createBoard();
-
-    user.placeAllShips();
-    user.logBoard();
-  };
-
-  const changePlacementPhase = () => {
-    shipPlacementPhase = false;
-  };
 
   const checkTurn = () => turn;
 
@@ -202,25 +169,25 @@ const gameState = () => {
     }
   };
 
-  const handleButtonClick = () => {
-    if (shipPlacementPhase) {
-
-    }
-  };
-
   return {
-    initializeGame, checkTurn, changeTurn, handleButtonClick, changePlacementPhase,
+    checkTurn, changeTurn,
   };
 };
 
-const displayController = (game) => {
+const displayController = (game, user, computer) => {
+  const handleButtonClick = (x, y) => {
+    if (!user.shipsPlaced) {
+      user.placeAllShips(x, y);
+    }
+  };
+
   const generatePlayerScreen = () => {
     const content = document.querySelector('.userBoard');
     for (let i = 0; i < 10; i += 1) {
       for (let j = 0; j < 10; j += 1) {
         const button = document.createElement('button');
         button.addEventListener('click', () => {
-          game.handleButtonClick(i, j);
+          handleButtonClick(i, j);
         });
         button.className = `gameTile ${i}, ${j}`;
         content.appendChild(button);
@@ -234,7 +201,7 @@ const displayController = (game) => {
       for (let j = 0; j < 10; j += 1) {
         const button = document.createElement('button');
         button.addEventListener('click', () => {
-          game.handleButtonClick(i, j);
+          handleButtonClick(i, j);
         });
         button.className = `gameTile ${i}, ${j}`;
         content.appendChild(button);
@@ -247,11 +214,16 @@ const displayController = (game) => {
     generateComputerScreen();
   };
 
-  return { initializeScreen };
+  return { initializeScreen, handleButtonClick };
 };
+
+const user = playerFactory();
+const computer = computerFactory();
+
+user.placeAllShips();
 
 const game = gameState();
 game.initializeGame();
 
-const display = displayController(game);
+const display = displayController(game, user, computer);
 display.initializeScreen();
