@@ -178,6 +178,12 @@ const displayController = (game, user, computer) => {
   const handleButtonClick = (x, y) => {
     if (!user.shipsPlaced) {
       user.placeAllShips(x, y);
+    } else if (game.checkTurn() === 1) {
+      user.attack(computer, x, y);
+      game.changeTurn();
+    } else if (game.checkTurn() === 2) {
+      computer.randomAttack(user);
+      game.changeTurn();
     }
   };
 
