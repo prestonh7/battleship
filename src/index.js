@@ -89,9 +89,7 @@ const gameboardFactory = () => {
   };
 };
 
-const playerFactory = () => {
-  const gameboard = gameboardFactory();
-  gameboard.createBoard();
+const playerFactory = (gameboard) => {
   let allShipsPlaced = false;
 
   const attack = (opponent, x, y) => {
@@ -127,10 +125,7 @@ const playerFactory = () => {
   };
 };
 
-const computerFactory = () => {
-  const gameboard = gameboardFactory();
-  gameboard.createBoard();
-
+const computerFactory = (gameboard) => {
   const checkIfValid = (opponent, x, y) => {
     const attack = opponent.gameboard.board[x][y];
     const isValid = attack === null || attack === 'miss' || typeof attack === 'object';
@@ -153,11 +148,22 @@ const computerFactory = () => {
     opponent.gameboard.receiveAttack(x, y);
   };
 
-  return { gameboard, randomAttack };
+  return { randomAttack };
 };
 
 const gameState = () => {
   let turn = 1;
+  const userBoard = gameboardFactory();
+  const compBoard = gameboardFactory();
+  const user = playerFactory(userBoard);
+  const computer = computerFactory(compBoard);
+  const display = displayController(user, computer);
+
+  const initializeBoards = () => {
+    userBoard.createBoard();
+    compBoard.createBoard();
+    display.initializeScreen();
+  };
 
   const checkTurn = () => turn;
 
@@ -170,22 +176,22 @@ const gameState = () => {
   };
 
   return {
-    checkTurn, changeTurn,
+    checkTurn, changeTurn, initializeBoards,
   };
 };
 
 const displayController = (game, user, computer) => {
-  const handleButtonClick = (x, y) => {
-    if (!user.shipsPlaced) {
-      user.placeAllShips(x, y);
-    } else if (game.checkTurn() === 1) {
-      user.attack(computer, x, y);
-      game.changeTurn();
-    } else if (game.checkTurn() === 2) {
-      computer.randomAttack(user);
-      game.changeTurn();
-    }
-  };
+  // const handleButtonClick = (x, y) => {
+  //   if (!user.shipsPlaced) {
+  //     user.placeAllShips(x, y);
+  //   } else if (game.checkTurn() === 1) {
+  //     user.attack(computer, x, y);
+  //     game.changeTurn();
+  //   } else if (game.checkTurn() === 2) {
+  //     computer.randomAttack(user);
+  //     game.changeTurn();
+  //   }
+  // };
 
   const generatePlayerScreen = () => {
     const content = document.querySelector('.userBoard');
@@ -223,13 +229,5 @@ const displayController = (game, user, computer) => {
   return { initializeScreen, handleButtonClick };
 };
 
-const user = playerFactory();
-const computer = computerFactory();
-
-user.placeAllShips();
-
 const game = gameState();
-game.initializeGame();
-
-const display = displayController(game, user, computer);
-display.initializeScreen();
+game.initializeBoards();
