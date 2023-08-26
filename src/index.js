@@ -89,7 +89,7 @@ const gameboardFactory = () => {
   };
 };
 
-const playerFactory = (gameboard) => {
+const playerFactory = () => {
   let allShipsPlaced = false;
 
   const attack = (opponent, x, y) => {
@@ -102,7 +102,7 @@ const playerFactory = (gameboard) => {
 
   const shipsPlaced = () => allShipsPlaced;
 
-  const placeAllShips = (x, y) => {
+  const placeAllShips = (gameboard, x, y) => {
     const shipLengths = [5, 4, 3, 3, 2];
     let shipIndex = 0;
     const isHorizontal = true;
@@ -121,13 +121,13 @@ const playerFactory = (gameboard) => {
     }
   };
   return {
-    attack, placeAllShips, gameboard, shipsPlaced,
+    attack, placeAllShips, shipsPlaced,
   };
 };
 
 const computerFactory = () => {
   const checkIfValid = (opponent, x, y) => {
-    const attack = opponent.gameboard.board[x][y];
+    const attack = opponent.board[x][y];
     const isValid = attack === null || attack === 'miss' || typeof attack === 'object';
 
     return isValid;
@@ -138,15 +138,14 @@ const computerFactory = () => {
     let x;
     let y;
 
-    // fix this
     while (!isValidAttack) {
-      x = Math.floor(Math.random() * opponent.gameboard.boardSize);
-      y = Math.floor(Math.random() * opponent.gameboard.boardSize);
+      x = Math.floor(Math.random() * 10);
+      y = Math.floor(Math.random() * 10);
 
       isValidAttack = checkIfValid(opponent, x, y);
     }
 
-    opponent.gameboard.receiveAttack(x, y);
+    opponent.receiveAttack(x, y);
   };
 
   const checkIfValidShip = (gameboard, x, y) => {
@@ -160,8 +159,8 @@ const computerFactory = () => {
     let y;
 
     while (!validPlacement) {
-      x = Math.floor(Math.random() * gameboard.boardSize);
-      y = Math.floor(Math.random() * gameboard.boardSize);
+      x = Math.floor(Math.random() * 10);
+      y = Math.floor(Math.random() * 10);
       validPlacement = checkIfValidShip(gameboard, x, y);
     }
   };
@@ -173,8 +172,8 @@ const gameState = () => {
   let turn = 1;
   const userBoard = gameboardFactory();
   const compBoard = gameboardFactory();
-  const user = playerFactory(userBoard);
-  const computer = computerFactory(compBoard);
+  const user = playerFactory();
+  const computer = computerFactory();
 
   const initializeBoards = () => {
     userBoard.createBoard();
@@ -191,15 +190,14 @@ const gameState = () => {
     }
   };
 
-  // prob redo this, make a while loop
   const playTurn = (x, y) => {
     if (!user.shipsPlaced) {
-      user.placeAllShips(x, y);
+      user.placeAllShips(userBoard, x, y);
     } else if (checkTurn() === 1) {
-      user.attack(computer, x, y);
+      user.attack(compBoard, x, y);
       changeTurn();
     } else if (checkTurn() === 2) {
-      computer.randomAttack(user);
+      computer.randomAttack(userBoard);
       changeTurn();
     }
   };
