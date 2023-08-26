@@ -157,12 +157,10 @@ const gameState = () => {
   const compBoard = gameboardFactory();
   const user = playerFactory(userBoard);
   const computer = computerFactory(compBoard);
-  const display = displayController(user, computer);
 
   const initializeBoards = () => {
     userBoard.createBoard();
     compBoard.createBoard();
-    display.initializeScreen();
   };
 
   const checkTurn = () => turn;
@@ -175,23 +173,27 @@ const gameState = () => {
     }
   };
 
+  const playTurn = (x, y) => {
+    if (!user.shipsPlaced) {
+      user.placeAllShips(x, y);
+    } else if (checkTurn() === 1) {
+      user.attack(computer, x, y);
+      changeTurn();
+    } else if (checkTurn() === 2) {
+      computer.randomAttack(user);
+      changeTurn();
+    }
+  };
+
   return {
-    checkTurn, changeTurn, initializeBoards,
+    checkTurn, changeTurn, initializeBoards, playTurn,
   };
 };
 
-const displayController = (game, user, computer) => {
-  // const handleButtonClick = (x, y) => {
-  //   if (!user.shipsPlaced) {
-  //     user.placeAllShips(x, y);
-  //   } else if (game.checkTurn() === 1) {
-  //     user.attack(computer, x, y);
-  //     game.changeTurn();
-  //   } else if (game.checkTurn() === 2) {
-  //     computer.randomAttack(user);
-  //     game.changeTurn();
-  //   }
-  // };
+const displayController = (game) => {
+  const handleButtonClick = (x, y) => {
+    game.playTurn(x, y);
+  };
 
   const generatePlayerScreen = () => {
     const content = document.querySelector('.userBoard');
@@ -231,3 +233,6 @@ const displayController = (game, user, computer) => {
 
 const game = gameState();
 game.initializeBoards();
+
+const display = displayController(game);
+display.initializeScreen();
