@@ -125,7 +125,7 @@ const playerFactory = (gameboard) => {
   };
 };
 
-const computerFactory = (gameboard) => {
+const computerFactory = () => {
   const checkIfValid = (opponent, x, y) => {
     const attack = opponent.gameboard.board[x][y];
     const isValid = attack === null || attack === 'miss' || typeof attack === 'object';
@@ -138,6 +138,7 @@ const computerFactory = (gameboard) => {
     let x;
     let y;
 
+    // fix this
     while (!isValidAttack) {
       x = Math.floor(Math.random() * opponent.gameboard.boardSize);
       y = Math.floor(Math.random() * opponent.gameboard.boardSize);
@@ -148,7 +149,24 @@ const computerFactory = (gameboard) => {
     opponent.gameboard.receiveAttack(x, y);
   };
 
-  return { randomAttack };
+  const checkIfValidShip = (gameboard, x, y) => {
+    const placement = gameboard.board[x][y];
+    return placement === null;
+  };
+
+  const placeAllShips = (gameboard) => {
+    let validPlacement = false;
+    let x;
+    let y;
+
+    while (!validPlacement) {
+      x = Math.floor(Math.random() * gameboard.boardSize);
+      y = Math.floor(Math.random() * gameboard.boardSize);
+      validPlacement = checkIfValidShip(gameboard, x, y);
+    }
+  };
+
+  return { randomAttack, placeAllShips };
 };
 
 const gameState = () => {
@@ -173,6 +191,7 @@ const gameState = () => {
     }
   };
 
+  // prob redo this, make a while loop
   const playTurn = (x, y) => {
     if (!user.shipsPlaced) {
       user.placeAllShips(x, y);
