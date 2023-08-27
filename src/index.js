@@ -144,19 +144,33 @@ const computerFactory = () => {
   };
 
   const checkIfValidShip = (gameboard, x, y) => {
-    const placement = gameboard.board[x][y];
+    const placement = gameboard[x][y];
     return placement === null;
   };
 
-  const placeAllShips = (gameboard) => {
-    let validPlacement = false;
-    let x;
-    let y;
+  const randomDirection = () => {
+    const randomNumber = Math.random();
+    return randomNumber >= 0.5;
+  };
 
-    while (!validPlacement) {
-      x = Math.floor(Math.random() * 10);
-      y = Math.floor(Math.random() * 10);
-      validPlacement = checkIfValidShip(gameboard, x, y);
+  const placeAllShips = (gameboard) => {
+    const shipLengths = [5, 4, 3, 3, 2];
+    for (let shipIndex = 0; shipIndex < shipLengths.length; shipIndex += 1) {
+      let validPlacement = false;
+      let x;
+      let y;
+
+      while (!validPlacement) {
+        x = Math.floor(Math.random() * 10);
+        y = Math.floor(Math.random() * 10);
+        validPlacement = checkIfValidShip(gameboard.board, x, y);
+      }
+
+      if (validPlacement) {
+        const isHorizontal = randomDirection();
+        const ship = shipFactory(shipLengths[shipIndex]);
+        gameboard.placeShip(ship, x, y, isHorizontal);
+      }
     }
   };
 
@@ -176,6 +190,8 @@ const gameState = () => {
   const initializeBoards = () => {
     userBoard.createBoard();
     compBoard.createBoard();
+    computer.placeAllShips(compBoard);
+    console.table(compBoard.board);
   };
 
   const shipPlacement = (x, y) => {
