@@ -102,26 +102,21 @@ const playerFactory = () => {
 
   const shipsPlaced = () => allShipsPlaced;
 
-  const placeAllShips = (gameboard, x, y) => {
-    const shipLengths = [5, 4, 3, 3, 2];
-    let shipIndex = 0;
+  const placeAllShips = (gameboard, x, y, length) => {
     const isHorizontal = true;
     let isValidPlacement = false;
 
-    isValidPlacement = gameboard.canPlaceShip(shipLengths[shipIndex], x, y, isHorizontal);
+    isValidPlacement = gameboard.canPlaceShip(length, x, y, isHorizontal);
 
     if (!isValidPlacement) {
       alert('Invalid placement');
-    } else if (shipIndex <= 4) {
-      const ship = shipFactory(shipLengths[shipIndex]);
-      gameboard.placeShip(ship, x, y, isHorizontal);
-      shipIndex += 1;
     } else {
-      changePhase();
+      const ship = shipFactory(length);
+      gameboard.placeShip(ship, x, y, isHorizontal);
     }
   };
   return {
-    attack, placeAllShips, shipsPlaced,
+    attack, placeAllShips, shipsPlaced, changePhase,
   };
 };
 
@@ -169,41 +164,38 @@ const computerFactory = () => {
 };
 
 const gameState = () => {
-  let turn = 1;
   const userBoard = gameboardFactory();
   const compBoard = gameboardFactory();
   const user = playerFactory();
   const computer = computerFactory();
+
+  const shipLengths = [5, 4, 3, 3, 2];
+  const shipIndex = 0;
+  let placementPhase = true;
 
   const initializeBoards = () => {
     userBoard.createBoard();
     compBoard.createBoard();
   };
 
-  const checkTurn = () => turn;
-
-  const changeTurn = () => {
-    if (turn === 1) {
-      turn = 2;
+  const shipPlacement = (x, y) => {
+    if (shipIndex <= shipIndex.length) {
+      user.placeAllShips(userBoard, x, y, shipLengths[shipIndex]);
     } else {
-      turn = 1;
+      placementPhase = false;
     }
   };
 
   const playTurn = (x, y) => {
-    if (!user.shipsPlaced) {
-      user.placeAllShips(userBoard, x, y);
-    } else if (checkTurn() === 1) {
+    if (placementPhase) {
+      shipPlacement(x, y);
+    } else {
       user.attack(compBoard, x, y);
-      changeTurn();
-    } else if (checkTurn() === 2) {
-      computer.randomAttack(userBoard);
-      changeTurn();
     }
   };
 
   return {
-    checkTurn, changeTurn, initializeBoards, playTurn,
+    initializeBoards, playTurn,
   };
 };
 
