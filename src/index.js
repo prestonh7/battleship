@@ -153,6 +153,7 @@ const computerFactory = () => {
     return randomNumber >= 0.5;
   };
 
+  // Rewrite this so it doesnt use x as a variable
   const placeAllShips = (gameboard) => {
     const shipLengths = [5, 4, 3, 3, 2];
     for (let shipIndex = 0; shipIndex < shipLengths.length; shipIndex += 1) {
@@ -220,6 +221,10 @@ const displayController = (game) => {
     game.playTurn(x, y);
   };
 
+  const updateGameboards = () => {
+
+  };
+
   const generatePlayerScreen = () => {
     const content = document.querySelector('.userBoard');
     for (let i = 0; i < 10; i += 1) {
@@ -227,6 +232,7 @@ const displayController = (game) => {
         const button = document.createElement('button');
         button.addEventListener('click', () => {
           handleButtonClick(i, j);
+          updateGameboards();
         });
         button.className = `gameTile ${i}, ${j}`;
         content.appendChild(button);
@@ -241,6 +247,7 @@ const displayController = (game) => {
         const button = document.createElement('button');
         button.addEventListener('click', () => {
           handleButtonClick(i, j);
+          updateGameboards();
         });
         button.className = `gameTile ${i}, ${j}`;
         content.appendChild(button);
