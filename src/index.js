@@ -145,10 +145,10 @@ const computerFactory = () => {
     opponent.receiveAttack(x, y);
   };
 
-  const checkIfValidShip = (gameboard, x, y) => {
-    const placement = gameboard[x][y];
-    return placement === null;
-  };
+  // const checkIfValidShip = (gameboard, x, y) => {
+  //   const placement = gameboard[x][y];
+  //   return placement === null;
+  // };
 
   const randomDirection = () => {
     const randomNumber = Math.random();
@@ -159,6 +159,7 @@ const computerFactory = () => {
   const placeAllShips = (gameboard) => {
     const shipLengths = [5, 4, 3, 3, 2];
     for (let shipIndex = 0; shipIndex < shipLengths.length; shipIndex += 1) {
+      const isHorizontal = randomDirection();
       let validPlacement = false;
       let x;
       let y;
@@ -166,11 +167,10 @@ const computerFactory = () => {
       while (!validPlacement) {
         x = Math.floor(Math.random() * 10);
         y = Math.floor(Math.random() * 10);
-        validPlacement = checkIfValidShip(gameboard.board, x, y);
+        validPlacement = gameboard.canPlaceShip(shipLengths[shipIndex], x, y, isHorizontal);
       }
 
       if (validPlacement) {
-        const isHorizontal = randomDirection();
         const ship = shipFactory(shipLengths[shipIndex]);
         gameboard.placeShip(ship, x, y, isHorizontal);
       }
@@ -200,6 +200,7 @@ const gameState = () => {
   const shipPlacement = (x, y) => {
     if (shipIndex <= shipIndex.length) {
       user.placeAllShips(userBoard, x, y, shipLengths[shipIndex]);
+      console.table('userboard', userBoard.board);
     } else {
       placementPhase = false;
     }
