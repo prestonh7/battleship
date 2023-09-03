@@ -8,3 +8,11 @@
     display: grid;
     grid-template: repeat(10, 2em) / repeat(10, 2em);
 }
+
+.miss {
+    color: white;
+}
+
+.hit {
+    color: red;
+}
