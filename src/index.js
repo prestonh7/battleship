@@ -84,8 +84,10 @@ const gameboardFactory = () => {
     return true;
   };
 
+  const getValue = (x, y) => board[x][y];
+
   return {
-    board, createBoard, placeShip, canPlaceShip, receiveAttack, allShipsSunk,
+    board, createBoard, placeShip, canPlaceShip, receiveAttack, allShipsSunk, getValue,
   };
 };
 
@@ -208,21 +210,32 @@ const gameState = () => {
       shipPlacement(x, y);
     } else {
       user.attack(compBoard, x, y);
+      computer.randomAttack(userBoard);
     }
   };
 
+  const getBoardValue = (x, y) => {
+    userBoard.getValue(x, y);
+  };
+
   return {
-    initializeBoards, playTurn,
+    initializeBoards, playTurn, getBoardValue,
   };
 };
 
 const displayController = (game) => {
-  const handleButtonClick = (x, y) => {
-    game.playTurn(x, y);
+  const updateGameboard = (button, x, y) => {
+    const value = game.getBoardValue(x, y);
+    if (value === 'miss') {
+      button.classList.add('miss');
+    } else if (typeof value === 'object') {
+      button.classList.add('hit');
+    }
   };
 
-  const updateGameboards = () => {
-
+  const handleButtonClick = (button, x, y) => {
+    game.playTurn(x, y);
+    updateGameboard(button, x, y);
   };
 
   const generatePlayerScreen = () => {
@@ -231,8 +244,7 @@ const displayController = (game) => {
       for (let j = 0; j < 10; j += 1) {
         const button = document.createElement('button');
         button.addEventListener('click', () => {
-          handleButtonClick(i, j);
-          updateGameboards();
+          handleButtonClick(button, i, j);
         });
         button.className = `gameTile ${i}, ${j}`;
         content.appendChild(button);
@@ -247,7 +259,6 @@ const displayController = (game) => {
         const button = document.createElement('button');
         button.addEventListener('click', () => {
           handleButtonClick(i, j);
-          updateGameboards();
         });
         button.className = `gameTile ${i}, ${j}`;
         content.appendChild(button);
