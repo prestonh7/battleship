@@ -193,10 +193,10 @@ const gameState = () => {
   };
 
   const shipPlacement = (x, y) => {
-    if (shipIndex <= shipLengths.length) {
+    if (shipIndex < shipLengths.length) {
       user.placeAllShips(userBoard, x, y, shipLengths[shipIndex]);
       shipIndex += 1;
-      console.table('userboard', userBoard.board);
+      console.table(userBoard.board);
     } else {
       placementPhase = false;
     }
