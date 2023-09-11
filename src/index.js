@@ -1,17 +1,18 @@
 import './style.css';
 
-const shipFactory = (length) => {
-  let hitpoints = length;
+const shipFactory = (size) => {
+  let hits = 0;
+  const length = size;
 
   const isSunk = () => {
-    if (hitpoints === 0) {
+    if (hits === length) {
       return true;
     }
     return false;
   };
 
   const hit = () => {
-    hitpoints -= 1;
+    hits += 1;
   };
 
   return { length, hit, isSunk };
@@ -21,6 +22,7 @@ const gameboardFactory = () => {
   const boardSize = 10;
   const board = [];
   const shipArray = [];
+  let shipIndex = 0;
 
   const createBoard = () => {
     for (let i = 0; i < boardSize; i += 1) {
@@ -28,17 +30,19 @@ const gameboardFactory = () => {
     }
   };
 
-  const placeShip = (ship, x, y, isHorizontal) => {
+  const placeShip = (x, y, isHorizontal, length) => {
+    const ship = shipFactory(length);
     if (isHorizontal) {
-      for (let i = 0; i < ship.length; i += 1) {
-        board[x][y + i] = ship;
+      for (let i = 0; i < length; i += 1) {
+        board[x][y + i] = shipIndex;
       }
     } else {
-      for (let i = 0; i < ship.length; i += 1) {
-        board[x + i][y] = ship;
+      for (let i = 0; i < length; i += 1) {
+        board[x + i][y] = shipIndex;
       }
     }
     shipArray.push(ship);
+    shipIndex += 1;
   };
 
   const canPlaceShip = (length, x, y, isHorizontal) => {
@@ -69,25 +73,18 @@ const gameboardFactory = () => {
 
   const receiveAttack = (x, y) => {
     if (board[x][y] !== null && board[x][y] !== 'miss') {
-      board[x][y].hit();
+      const index = board[x][y];
+      board[x][y] = 'hit';
+      shipArray[index].hit();
     } else {
       board[x][y] = 'miss';
     }
   };
 
-  const allShipsSunk = () => {
-    for (let i = 0; i < shipArray.length; i += 1) {
-      if (!shipArray[i].isSunk()) {
-        return false;
-      }
-    }
-    return true;
-  };
-
   const getValue = (x, y) => board[x][y];
 
   return {
-    board, createBoard, placeShip, canPlaceShip, receiveAttack, allShipsSunk, getValue,
+    board, createBoard, placeShip, canPlaceShip, receiveAttack, getValue,
   };
 };
 
@@ -113,8 +110,7 @@ const playerFactory = () => {
     if (!isValidPlacement) {
       alert('Invalid placement');
     } else {
-      const ship = shipFactory(length);
-      gameboard.placeShip(ship, x, y, isHorizontal);
+      gameboard.placeShip(x, y, isHorizontal, length);
     }
   };
   return {
@@ -150,7 +146,6 @@ const computerFactory = () => {
     return randomNumber >= 0.5;
   };
 
-  // Rewrite this so it doesnt use x as a variable
   const placeAllShips = (gameboard) => {
     const shipLengths = [5, 4, 3, 3, 2];
     for (let shipIndex = 0; shipIndex < shipLengths.length; shipIndex += 1) {
@@ -166,8 +161,7 @@ const computerFactory = () => {
       }
 
       if (validPlacement) {
-        const ship = shipFactory(shipLengths[shipIndex]);
-        gameboard.placeShip(ship, x, y, isHorizontal);
+        gameboard.placeShip(x, y, isHorizontal, shipLengths[shipIndex]);
       }
     }
   };
