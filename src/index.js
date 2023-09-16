@@ -207,8 +207,9 @@ const gameState = () => {
     }
   };
 
-  const getBoardValue = (x, y) => {
-    userBoard.getValue(x, y);
+  const getBoardValue = (board, x, y) => {
+    if (board === 'user') return userBoard.getValue(x, y);
+    return compBoard.getValue(x, y);
   };
 
   return {
@@ -217,18 +218,16 @@ const gameState = () => {
 };
 
 const displayController = (game) => {
-  const updateGameboard = (button, x, y) => {
-    const value = game.getBoardValue(x, y);
+  const updateGameboard = (button, x, y, board) => {
+    const value = game.getBoardValue(board, x, y);
     if (value === 'miss') {
       button.classList.add('miss');
-    } else if (typeof value === 'object') {
-      button.classList.add('hit');
-    }
+    } else button.classList.add('hit');
   };
 
-  const handleButtonClick = (button, x, y) => {
+  const handleButtonClick = (button, x, y, board) => {
     game.playTurn(x, y);
-    updateGameboard(button, x, y);
+    updateGameboard(button, x, y, board);
   };
 
   const generatePlayerScreen = () => {
@@ -237,7 +236,7 @@ const displayController = (game) => {
       for (let j = 0; j < 10; j += 1) {
         const button = document.createElement('button');
         button.addEventListener('click', () => {
-          handleButtonClick(button, i, j);
+          handleButtonClick(button, i, j, 'user');
         });
         button.className = `gameTile ${i}, ${j}`;
         content.appendChild(button);
@@ -251,7 +250,7 @@ const displayController = (game) => {
       for (let j = 0; j < 10; j += 1) {
         const button = document.createElement('button');
         button.addEventListener('click', () => {
-          handleButtonClick(button, i, j);
+          handleButtonClick(button, i, j, 'computer');
         });
         button.className = `gameTile ${i}, ${j}`;
         content.appendChild(button);
