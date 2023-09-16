@@ -79,6 +79,7 @@ const gameboardFactory = () => {
     } else {
       board[x][y] = 'miss';
     }
+    console.table(board);
   };
 
   const getValue = (x, y) => board[x][y];
@@ -250,7 +251,7 @@ const displayController = (game) => {
       for (let j = 0; j < 10; j += 1) {
         const button = document.createElement('button');
         button.addEventListener('click', () => {
-          handleButtonClick(i, j);
+          handleButtonClick(button, i, j);
         });
         button.className = `gameTile ${i}, ${j}`;
         content.appendChild(button);
