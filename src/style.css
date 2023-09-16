@@ -1,3 +1,7 @@
+body {
+    background-color: #272727;
+}
+
 .content {
     display: grid;
     grid-template: 1fr / 1fr 1fr;
@@ -9,10 +13,20 @@
     grid-template: repeat(10, 2em) / repeat(10, 2em);
 }
 
+button {
+    background-color: #535353;
+    border: .1em solid black;
+}
+
+button:hover {
+    background-color: #2a2a2a;
+    cursor: pointer;
+}
+
 .miss {
-    color: white;
+    background-color: white;
 }
 
 .hit {
-    color: red;
+    background-color: red;
 }
