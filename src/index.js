@@ -121,10 +121,13 @@ const playerFactory = () => {
 
 const computerFactory = () => {
   const checkIfValid = (opponent, x, y) => {
-    const attack = opponent.board[x][y];
-    const isValid = attack === null || attack === 'miss' || typeof attack === 'object';
-
-    return isValid;
+    const attack = opponent.getValue(x, y);
+    // const isValid = attack === null || attack === 'miss' || typeof attack === 'object';
+    if (attack === 'hit') return false;
+    if (attack === null || typeof attack === 'number') {
+      return true;
+    }
+    return false;
   };
 
   const randomAttack = (opponent) => {
@@ -222,9 +225,11 @@ const gameState = () => {
 const displayController = (game) => {
   const updateGameboard = (button, x, y, board) => {
     const value = game.getBoardValue(board, x, y);
-    if (value === 'miss') {
-      button.classList.add('miss');
-    } else button.classList.add('hit');
+    if (board === 'computer') {
+      if (value === 'miss') {
+        button.classList.add('miss');
+      } else button.classList.add('hit');
+    }
   };
 
   const handleButtonClick = (button, x, y, board) => {
