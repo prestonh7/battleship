@@ -198,12 +198,14 @@ const gameState = () => {
     }
   };
 
-  const playTurn = (x, y) => {
-    if (placementPhase) {
+  const playTurn = (x, y, board) => {
+    if (placementPhase && board === 'user') {
       shipPlacement(x, y);
-    } else {
+    } else if (!placementPhase && board === 'computer') {
       user.attack(compBoard, x, y);
       computer.randomAttack(userBoard);
+    } else {
+      console.error('playTurn error');
     }
   };
 
@@ -226,7 +228,7 @@ const displayController = (game) => {
   };
 
   const handleButtonClick = (button, x, y, board) => {
-    game.playTurn(x, y);
+    game.playTurn(x, y, board);
     updateGameboard(button, x, y, board);
   };
 
